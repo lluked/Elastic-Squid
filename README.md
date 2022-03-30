@@ -7,7 +7,12 @@ A simple Docker Compose project that makes use of Elastic to monitor Squid proxy
 - Filebeat
 - Squid
  
-The Docker Compose file is based on [Start the Elastic Stack with Docker Compose](https://www.elastic.co/guide/en/elastic-stack-get-started/current/get-started-stack-docker.html#get-started-docker-tls) with some slight modification (yaml anchoring, variable changes, etc) and the addition of Filebeat and Squid services.
+The Docker Compose file was originally based on [Start the Elastic Stack with Docker Compose](https://www.elastic.co/guide/en/elastic-stack-get-started/current/get-started-stack-docker.html#get-started-docker-tls), however now:
+
+- All elastic based configurations have been moved from environment variables into their own config files.
+- The setup service has had its command moved out into a script with a supporting file for defining instances rather than the file being created by the script.
+- YAML anchoring has been used to define services.
+- Filebeat and Squid services have been added.
  
 Squid is configured to bind to port 3128 on the host and sends logs via syslog to Filebeat, which uses the Squid module to parse logs, and then forwards to Elasticsearch.
 
@@ -19,8 +24,9 @@ Squid is configured to bind to port 3128 on the host and sends logs via syslog t
 - Set the proxy in your web browser to `localhost:3128`. Firefox works best as Chrome and Edge use system wide settings.
 - Perform some web activity.
 - Visit Kibana at `localhost:5601` or the relevant port depending on configuration, login with the default credentials `elastic:changeme`.
-- Once logged in select `Explore on my own` on the Welcome to Elastic screen, go to `Discover` and you will be prompted to create a data view. Create one to match the index pattern, `filebeat-*` for example, and set the Timestamp field to `@timestamp`. You will only be asked to created a data view after data has been forwarded over from the proxy so this needs to be done after performing some web activity.
-- You can now view logs under Discover by changing the data view to `filebeat-*`.
+
+- Once logged in select the burger navigation icon, select Management -> Stack Management, select Kibana -> Data Views, you will then be prompted to create a data view. Create one with the Name matching the index pattern, `filebeat-*`, and set the Timestamp field to `@timestamp`. You will only be able to created a data view after data has been forwarded over from the proxy so this needs to be done after performing some web activity and there may be a slight delay.
+- You can now view logs under Discover, under the navigation icon, by changing the data view to `filebeat-*`.
 - Analyse the data and then create visualisations and dashboards to extract more information.
 
 ## Notes
