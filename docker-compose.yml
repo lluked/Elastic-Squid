@@ -23,8 +23,7 @@ services:
       timeout: 5s
       retries: 120
 
-  # Create es01 service as anchor es-master
-  es01: &es-master
+  es01:
     depends_on:
       setup:
         condition: service_healthy
@@ -54,37 +53,9 @@ services:
       timeout: 10s
       retries: 120
 
-  # Create es02 service as anchor es-node
-  es02: &es-node
-    # Anchor from es-master anchor
-    <<: *es-master
-    # Overide yaml keys
-    depends_on:
-      - es01
-    volumes:
-      - certs:/usr/share/elasticsearch/config/certs
-      - esdata02:/usr/share/elasticsearch/data
-      - ./elastic/elasticsearch/es02.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
-    ports: []
-
-  es03:
-    # Anchor from es-node anchor
-    <<: *es-node
-    # Overide yaml keys
-    depends_on:
-      - es02
-    volumes:
-      - certs:/usr/share/elasticsearch/config/certs
-      - esdata03:/usr/share/elasticsearch/data
-      - ./elastic/elasticsearch/es03.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
-
   kibana:
     depends_on:
       es01:
-        condition: service_healthy
-      es02:
-        condition: service_healthy
-      es03:
         condition: service_healthy
     image: docker.elastic.co/kibana/kibana:${STACK_VERSION}
     volumes:
@@ -122,22 +93,22 @@ services:
     command: ["--strict.perms=false"]
 
   squid:
-    depends_on:
-      - filebeat
-    image: ${SQUID_IMAGE}
+    build:
+      context: "./squid"
+      args:
+        SQUID_VERSION: ${SQUID_VERSION:-5.4.1}
+    restart: always
     ports:
       - ${SQUID_PORT}:3128
+      - ${SQUID_PORT_SSLBUMP}:3129
     volumes:
-    - ./squid.conf:/etc/squid/squid.conf:ro
+      - ./squid-certs:/etc/squid/ssl_cert
+      - ./squid/squid.conf:/etc/squid/squid.conf
 
 volumes:
   certs:
     driver: local
   esdata01:
-    driver: local
-  esdata02:
-    driver: local
-  esdata03:
     driver: local
   kibanadata:
     driver: local
