@@ -93,16 +93,13 @@ services:
     command: ["--strict.perms=false"]
 
   squid:
-    build:
-      context: "./squid"
-      args:
-        SQUID_VERSION: ${SQUID_VERSION:-5.4.1}
+    image: ghcr.io/lluked/docker-squid:main
     restart: always
     ports:
       - ${SQUID_PORT}:3128
       - ${SQUID_PORT_SSLBUMP}:3129
     volumes:
-      - ./squid-certs:/etc/squid/ssl_cert
+      - ./squid/certs:/etc/squid/ssl_cert
       - ./squid/squid.conf:/etc/squid/squid.conf
 
 volumes:
