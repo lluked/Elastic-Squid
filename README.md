@@ -17,14 +17,14 @@ The Docker Compose file was originally based on [Start the Elastic Stack with Do
 
 ## Squid
 
-Squid is built from source to be able to carry out ssl bumping. Please refer to [Docker-Squid](https://github.com/lluked/Docker-Squid) for more information. Squid is configured to bind to ports 3128 (normal) and 3129 (ssl bumping) on the host and sends logs via syslog to Filebeat. Filebeat then uses the Squid module to parse logs, and forward to Elasticsearch.
+Squid is built from source to be able to carry out ssl bumping. Please refer to [docker-squid](https://github.com/lluked/docker-squid) for more information. Squid is configured to bind to ports 3128 (normal) and 3129 (ssl bumping) on the host and sends logs via syslog to Filebeat. Filebeat then uses the Squid module to parse logs, and forward to Elasticsearch.
 
 ## Instructions
 
 - Read the notes.
 - Launch the project with `docker-compose up` from the project directory.
 - Wait for all the services to start, this may take a while.
-- Set the proxy in your web browser to `localhost:3128` or `localhost:3128` for ssl inspection. Firefox works best as Chrome and Edge use system wide settings. If using the ssl bump port `squid-certs/myCA.der` needs installing as mentioned in the Docker-Squid repository.
+- Set the proxy in your web browser to `localhost:3128` or `localhost:3129` for ssl inspection. Firefox works best as Chrome and Edge use system wide settings. If using the ssl bump port `squid-certs/myCA.der` needs installing as mentioned in the docker-squid repository.
 - Perform some web activity.
 - Visit Kibana at `localhost:5601`, login with the default credentials `elastic:changeme`.
 
